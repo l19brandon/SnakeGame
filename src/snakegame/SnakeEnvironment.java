@@ -5,6 +5,7 @@
 package snakegame;
 
 import environment.Environment;
+import environment.GraphicsPalette;
 import environment.Grid;
 import image.ResourceTools;
 import java.awt.Color;
@@ -13,6 +14,7 @@ import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 
 /**
  *
@@ -25,6 +27,10 @@ class SnakeEnvironment extends Environment {
     private Snake snake;
     private int delay = 0;
     private int moveCounter = delay;
+    
+    private ArrayList<Point> apples;
+    
+    private ArrayList<Point> poison;
 
     public SnakeEnvironment() {
     }
@@ -38,9 +44,19 @@ class SnakeEnvironment extends Environment {
         this.grid.setColor(Color.white);
         this.grid.setColumns(70);
         this.grid.setRows(40);
-        this.grid.setCellHeight(10);
-        this.grid.setCellWidth(10);
+        this.grid.setCellHeight(20);
+        this.grid.setCellWidth(20);
         this.grid.setPosition(new Point(0, 0));
+        
+        this.apples = new ArrayList<Point>();
+        this.apples.add(new Point(10,12));
+        this.apples.add(new Point(20,15)); 
+        
+        this.poison = new ArrayList<Point>();
+        this.poison.add(new Point(29,15));
+        this.poison.add(new Point(22, 22));
+
+
 
 
         this.snake = new Snake();
@@ -134,7 +150,20 @@ class SnakeEnvironment extends Environment {
     @Override
     public void paintEnvironment(Graphics graphics) {
         if (this.grid != null) {
-//            this.grid.paintComponent(graphics);
+            this.grid.paintComponent(graphics);
+            
+            if(this.apples != null){
+                for (int i = 0; i < this.apples.size(); i++) {
+                    GraphicsPalette.drawApple(graphics, this.grid.getCellPosition(this.apples.get(i)), new Point(this.grid.getCellSize()));
+                }
+            }
+            
+            
+            if(this.poison != null){
+                for (int i = 0; i < this.poison.size(); i++) {
+                    GraphicsPalette.drawPoisonBottle(graphics, this.grid.getCellPosition(this.poison.get(i)), new Point(this.grid.getCellSize()), Color.yellow);
+                }
+            }
 
             graphics.setColor(Color.black);
             graphics.setFont(new Font("Calibri", Font.BOLD, 60));
@@ -150,11 +179,10 @@ class SnakeEnvironment extends Environment {
                     graphics.fillOval(cellLocation.x, cellLocation.y, grid.getCellWidth(), grid.getCellHeight());
 
                 }
-
-
             }
         }
-
+        
+//GraphicsPalette.drawUnicorn(graphics, new Point(50,50), new Point(200,200), Color.BLACK, environment.Direction.NORTH);
 
 
 
