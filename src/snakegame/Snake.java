@@ -16,12 +16,16 @@ import static snakegame.Direction.UP;
 public class Snake {
 
     private ArrayList<Point> body;
-    private Direction direction = Direction.RIGHT;
+    private Direction direction = Direction.DOWN;
+    private int growthCounter;
 
     {
         setBody(new ArrayList<Point>());
     }
-    
+
+//    void grow(int growth) {
+//        this.growthCounter += growth;
+//    }
 
     public void move() {
         //create a new location for the head, using the directon
@@ -47,16 +51,22 @@ public class Snake {
                 x = - 1;
                 y = 0;
                 break;
-                
-                
+
+
         }
-        
+
 
         getBody().add(0, new Point(getHead().x + x, getHead().y + y));
 //        delete tail
-        getBody().remove(getBody().size() - 1);
-        
-        
+//        if (growthCounter > 0) {
+//            growthCounter--;
+//        } else {
+//            getBody().remove(getBody().size() - 1);
+//        }
+
+
+
+
     }
 
     public Point getHead() {
