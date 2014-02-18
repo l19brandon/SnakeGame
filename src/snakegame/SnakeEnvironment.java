@@ -24,7 +24,6 @@ import java.util.ArrayList;
 class SnakeEnvironment extends Environment {
 
     private Grid grid1;
-    private Grid grid2;
     private int score = 0;
     private Snake snake;
     private int moveDelay = 4;
@@ -38,13 +37,24 @@ class SnakeEnvironment extends Environment {
     private ArrayList<Point> speedBoost;
     private ArrayList<Point> removeSquares;
     private ArrayList<Point> wall;
+    private ArrayList<Point> deleteTail;
     private GameState gameState = GameState.PAUSED;
     private Image timePenaltyPic;
     private Image addTimePic;
     private Image speedBoostPic;
     private Image removeSquaresPic;
-    private Point inPortal = new Point(10,10);
-    private Point outPortal = new Point(5,5);
+    private Image deleteTailPic;
+    private Point inPortal = new Point(10, 10);
+    private Point outPortal = new Point(50, 20);
+    private boolean Portal1Disappear = false;
+    private boolean Portal2Disappear = false;
+    private boolean deleteTailOn = false;
+
+    public Point randomPoint() {
+
+        return new Point((int) (Math.random() * this.grid1.getColumns()), (int) (Math.random() * this.grid1.getRows()));
+
+    }
 
     public int randomX() {
         return (int) (Math.random() * this.grid1.getColumns());
@@ -65,58 +75,61 @@ class SnakeEnvironment extends Environment {
         this.addTimePic = ResourceTools.loadImageFromResource("resources/clock.png");
         this.speedBoostPic = ResourceTools.loadImageFromResource("resources/lightning bolt.png");
         this.removeSquaresPic = ResourceTools.loadImageFromResource("resources/Bomb.png");
+        this.deleteTailPic = ResourceTools.loadImageFromResource("resources/Scissors.png");
 
 
-        this.grid2 = new Grid();
-        this.grid2.setColor(Color.black);
-        this.grid2.setRows(20);
-        this.grid2.setColumns(20);
-        this.grid2.setCellHeight(15);
-        this.grid2.setCellWidth(15);
-        this.grid2.setPosition(new Point(360, 150));
+//        this.grid2 = new Grid();
+//        this.grid2.setColor(Color.black);
+//        this.grid2.setRows(20);
+//        this.grid2.setColumns(20);
+//        this.grid2.setCellHeight(15);
+//        this.grid2.setCellWidth(15);
+//        this.grid2.setPosition(new Point(360, 150));
 
 
         this.grid1 = new Grid();
         this.grid1.setColor(Color.white);
-        this.grid1.setColumns(20);
-        this.grid1.setRows(20);
+        this.grid1.setColumns(59);
+        this.grid1.setRows(32);
         this.grid1.setCellHeight(15);
         this.grid1.setCellWidth(15);
-        this.grid1.setPosition(new Point(30, 150));
+        this.grid1.setPosition(new Point(0, 80));
 
 
 
         this.addPoints = new ArrayList<Point>();
-        this.addPoints.add(new Point(this.randomX(), this.randomY()));
-        this.addPoints.add(new Point(this.randomX(), this.randomY()));
+        this.addPoints.add(randomPoint());
+        this.addPoints.add(randomPoint());
 
         this.timePenalty = new ArrayList<Point>();
-        this.timePenalty.add(new Point(this.randomX(), this.randomY()));
-        this.timePenalty.add(new Point(this.randomX(), this.randomY()));
+        this.timePenalty.add(randomPoint());
+        this.timePenalty.add(randomPoint());
 
         this.addTime = new ArrayList<Point>();
-        this.addTime.add(new Point(this.randomX(), this.randomY()));
-        this.addTime.add(new Point(this.randomX(), this.randomY()));
+        this.addTime.add(randomPoint());
+        this.addTime.add(randomPoint());
 
 
         this.speedBoost = new ArrayList<Point>();
-        this.speedBoost.add(new Point(this.randomX(), this.randomY()));
-        this.speedBoost.add(new Point(this.randomX(), this.randomY()));
+        this.speedBoost.add(randomPoint());
+        this.speedBoost.add(randomPoint());
 
         this.removeSquares = new ArrayList<Point>();
-        this.removeSquares.add(new Point(this.randomX(), this.randomY()));
-        this.removeSquares.add(new Point(this.randomX(), this.randomY()));
+        this.removeSquares.add(randomPoint());
+        this.removeSquares.add(randomPoint());
+
+        this.deleteTail = new ArrayList<Point>();
+        this.deleteTail.add(randomPoint());
+        this.deleteTail.add(randomPoint());
 
 
 
 
         this.snake = new Snake();
-        this.snake.getBody().add(new Point(this.randomX(), this.randomY()));
+        this.snake.getBody().add(randomPoint());
 
-//        System.out.println((((int) (Math.random() * this.grid.getColumns())) + " , " + ((int) (Math.random() * this.grid.getRows()))));
-
-        this.wall = new ArrayList<Point>();
-        this.wall.add(new Point(0, 0));
+//        this.wall = new ArrayList<Point>();
+//        this.wall.add(new Point(0, 0));
 
 
     }
@@ -198,7 +211,6 @@ class SnakeEnvironment extends Environment {
                 System.out.println("mine");
                 timePenalty.get(i).move(this.randomX(), this.randomY());
                 this.moveCounter = 40;
-
             }
         }
 
@@ -220,25 +232,38 @@ class SnakeEnvironment extends Environment {
             }
         }
 
+        for (int i = 0; i < this.deleteTail.size(); i++) {
+            if (snake.getHead().equals(this.deleteTail.get(i))) {
+                deleteTail.get(i).move(this.randomX(), this.randomY());
+                System.out.println("don't delete");
+                if (this.snake.getBody().size() > 20) {
+                    
+                     for (int j = 2; j < 20; j++) {
+                         
+                 this.snake.getBody().get(j).move(randomX(), randomY());  
+                 
+                }
+                     
+                }else  {
+                    
+                     for (int j = 2; j < this.snake.getBody().size() - 1; j++) {
+                         
+                         this.snake.getBody().get(j).move(randomX(), randomY());
+                         
+                }
+                     
+                }
+
+            }
+        }
+
         for (int i = 0; i < this.removeSquares.size(); i++) {
             if (snake.getHead().equals(this.removeSquares.get(i))) {
                 removeSquares.get(i).move(this.randomX(), this.randomY());
 
-                this.snake.getBody().add((this.snake.getBody().size()), new Point(this.randomX(), this.randomY()));
-                this.snake.getBody().add((this.snake.getBody().size()), new Point(this.randomX(), this.randomY()));
-                this.snake.getBody().add((this.snake.getBody().size()), new Point(this.randomX(), this.randomY()));
-                this.snake.getBody().add((this.snake.getBody().size()), new Point(this.randomX(), this.randomY()));
-                this.snake.getBody().add((this.snake.getBody().size()), new Point(this.randomX(), this.randomY()));
-                this.snake.getBody().add((this.snake.getBody().size()), new Point(this.randomX(), this.randomY()));
-                this.snake.getBody().add((this.snake.getBody().size()), new Point(this.randomX(), this.randomY()));
-                this.snake.getBody().add((this.snake.getBody().size()), new Point(this.randomX(), this.randomY()));
-                this.snake.getBody().add((this.snake.getBody().size()), new Point(this.randomX(), this.randomY()));
-                this.snake.getBody().add((this.snake.getBody().size()), new Point(this.randomX(), this.randomY()));
-                this.snake.getBody().add((this.snake.getBody().size()), new Point(this.randomX(), this.randomY()));
-                this.snake.getBody().add((this.snake.getBody().size()), new Point(this.randomX(), this.randomY()));
-                this.snake.getBody().add((this.snake.getBody().size()), new Point(this.randomX(), this.randomY()));
-                this.snake.getBody().add((this.snake.getBody().size()), new Point(this.randomX(), this.randomY()));
-
+                for (int j = 0; j < 20; j++) {
+                    this.snake.getBody().add((this.snake.getBody().size()), randomPoint());
+                }
 
                 System.out.println("random squares");
             }
@@ -247,9 +272,22 @@ class SnakeEnvironment extends Environment {
 
         for (int i = 1; i < this.snake.getBody().size(); i++) {
             if (snake.getHead().equals(this.snake.getBody().get(i).getLocation())) {
-                this.snake.getHead().move(this.randomX(), this.randomY());
-                this.moveCounter = 40;
+//                this.snake.getHead().move(this.randomX(), this.randomY());
+//                this.moveCounter = 40;
+                gameState = GameState.ENDED;
             }
+        }
+
+
+
+
+        if (snake.getHead().equals(this.inPortal)) {
+            snake.getHead().x = this.outPortal.x;
+            snake.getHead().y = this.outPortal.y;
+            this.Portal1Disappear = true;
+            this.Portal2Disappear = true;
+
+
         }
 
 
@@ -310,27 +348,12 @@ class SnakeEnvironment extends Environment {
         Point headLocation;
         graphics.setColor(Color.red);
 
-        if (snake != null) {
-            
-            
-            for (int i = 0; i < 1; i++) {
-                headLocation = grid1.getCellPosition(snake.getBody().get(i));
-                graphics.setColor(Color.WHITE);
-                graphics.fillRect(headLocation.x, headLocation.y, grid1.getCellWidth(), grid1.getCellHeight());
-            }
-
-            for (int i = 1; i < snake.getBody().size(); i++) {
-                headLocation = grid1.getCellPosition(snake.getBody().get(i));
-                graphics.setColor(Color.BLACK);
-                graphics.fillRect(headLocation.x, headLocation.y, grid1.getCellWidth(), grid1.getCellHeight());
-            }
-        }
 
 
 
         if (this.grid1 != null) {
-            this.grid1.paintComponent(graphics);
-            this.grid2.paintComponent(graphics);
+//            this.grid1.paintComponent(graphics);
+//            this.grid2.paintComponent(graphics);
 
             if (this.addPoints != null) {
                 for (int i = 0; i < this.addPoints.size(); i++) {
@@ -362,40 +385,69 @@ class SnakeEnvironment extends Environment {
                 for (int i = 0; i < this.removeSquares.size(); i++) {
                     graphics.drawImage(removeSquaresPic, this.grid1.getCellPosition(this.removeSquares.get(i)).x, this.grid1.getCellPosition(this.removeSquares.get(i)).y, this.grid1.getCellSize().x, this.grid1.getCellSize().y, this);
                 }
-            }
 
-            if (gameState == GameState.ENDED) {
-                graphics.setColor(new Color(250, 50, 50, 100));
-                graphics.fillRect(125, 200, 575, 180);
-                graphics.setColor(Color.red);
-                graphics.setFont(new Font("Calibri", Font.BOLD, 100));
-                graphics.drawString("GAME OVER", 150, 300);
-                graphics.setColor(Color.WHITE);
-                graphics.setFont(new Font("Calibri", Font.BOLD, 50));
-                graphics.drawString("Score: " + this.score, 310, 350);
-            } else {
-                graphics.setColor(Color.WHITE);
-                graphics.setFont(new Font("Calibri", Font.BOLD, 60));
-                graphics.drawString("Score:" + this.score, 10, 60);
-                if (this.clockTimer >= 10) {
-                    graphics.setColor(Color.white);
-                } else if (this.clockTimer >= 5) {
-                    graphics.setColor(Color.YELLOW);
-                } else if (this.clockTimer >= 1) {
-                    graphics.setColor(Color.red);
+                if (this.deleteTail != null) {
+                    for (int i = 0; i < this.deleteTail.size(); i++) {
+                        graphics.drawImage(deleteTailPic, this.grid1.getCellPosition(this.deleteTail.get(i)).x, this.grid1.getCellPosition(this.deleteTail.get(i)).y, this.grid1.getCellSize().x, this.grid1.getCellSize().y, this);
+                    }
+
                 }
-                graphics.drawString("Timer:" + this.clockTimer, 300, 60);
+
+
+                if (snake != null) {
+                    for (int i = 0; i < 1; i++) {
+                        headLocation = grid1.getCellPosition(snake.getBody().get(i));
+                        graphics.setColor(Color.WHITE);
+                        graphics.fillRect(headLocation.x, headLocation.y, grid1.getCellWidth(), grid1.getCellHeight());
+                    }
+
+                    for (int i = 1; i < snake.getBody().size(); i++) {
+                        headLocation = grid1.getCellPosition(snake.getBody().get(i));
+                        graphics.setColor(Color.BLACK);
+                        graphics.fillRect(headLocation.x, headLocation.y, grid1.getCellWidth(), grid1.getCellHeight());
+                    }
+                }
+
+
+                if (gameState == GameState.ENDED) {
+                    graphics.setColor(new Color(250, 50, 50, 100));
+                    graphics.fillRect(125, 200, 575, 180);
+                    graphics.setColor(Color.red);
+                    graphics.setFont(new Font("Calibri", Font.BOLD, 100));
+                    graphics.drawString("GAME OVER", 150, 300);
+                    graphics.setColor(Color.WHITE);
+                    graphics.setFont(new Font("Calibri", Font.BOLD, 50));
+                    graphics.drawString("Score: " + this.score, 310, 350);
+                } else {
+                    graphics.setColor(Color.WHITE);
+                    graphics.setFont(new Font("Calibri", Font.BOLD, 60));
+                    graphics.drawString("Score:" + this.score, 10, 60);
+                    if (this.clockTimer >= 10) {
+                        graphics.setColor(Color.white);
+                    } else if (this.clockTimer >= 5) {
+                        graphics.setColor(Color.YELLOW);
+                    } else if (this.clockTimer >= 1) {
+                        graphics.setColor(Color.red);
+                    }
+                    graphics.drawString("Timer:" + this.clockTimer, 300, 60);
+                }
+
+                if (Portal1Disappear == false) {
+                    GraphicsPalette.enterPortal(graphics, this.grid1.getCellPosition(inPortal), this.grid1.getCellSize(), Color.yellow);
+                }
+
+                if (Portal2Disappear == false) {
+                    GraphicsPalette.leavePortal(graphics, this.grid1.getCellPosition(outPortal), this.grid1.getCellSize(), Color.yellow);
+
+                }
+
+
             }
 
-            GraphicsPalette.enterPortal(graphics, this.grid1.getCellPosition(inPortal), this.grid1.getCellSize(), Color.yellow);
-            GraphicsPalette.leavePortal(graphics, this.grid2.getCellPosition(outPortal), this.grid2.getCellSize(), Color.yellow);
-            
+
+
 
         }
-
-
-
-
-    }
 //GraphicsPalette.drawUnicorn(graphics, new Point(50,50), new Point(200,200), Color.BLACK, environment.Direction.NORTH);
+    }
 }

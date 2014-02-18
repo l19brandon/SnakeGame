@@ -16,11 +16,10 @@ public class SnakeGame {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        start ();
+        start();
     }
 
     private static void start() {
         ApplicationStarter.run("Snake Game", new SnakeEnvironment());
     }
-
-    }
+}

@@ -57,6 +57,8 @@ public class Snake {
 
 
         getBody().add(0, new Point(getHead().x + x, getHead().y + y));
+        
+        
 //        delete tail
 //        if (growthCounter > 0) {
 //            growthCounter--;
