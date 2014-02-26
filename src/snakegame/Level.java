@@ -8,9 +8,7 @@ package snakegame;
  *
  * @author Leo
  */
-public enum GameState {
-    
-        RUNNING, PAUSED, ENDED, START
-    
+public enum Level {
+    ONE, TWO, THREE, FOUR, FIVE;
     
 }
