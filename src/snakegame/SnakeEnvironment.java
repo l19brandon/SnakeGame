@@ -33,10 +33,11 @@ class SnakeEnvironment extends Environment implements TimerNotification {
     private int clockTimer = 15;
     private int moveDelay = 4;
     private int moveCounter = moveDelay;
-    private int level2 = 250;
-    private int level3 = 350;
-    private int level4 = 450;
-    private int level5 = 550;
+    private int level2 = 150;
+    private int level3 = 250;
+    private int level4 = 350;
+    private int level5 = 450;
+    private int totalTime = 0;
     private int pointsRemaining = 0;
     private ArrayList<Point> addPoints;
     private ArrayList<Point> timePenalty;
@@ -60,6 +61,7 @@ class SnakeEnvironment extends Environment implements TimerNotification {
     private boolean deleteTailOn = false;
     private boolean doublePointsOn = false;
     private boolean levelChange = false;
+    private boolean page2 = false;
     private TimerEventManager tem;
     private Level level = Level.ONE;
 
@@ -91,14 +93,6 @@ class SnakeEnvironment extends Environment implements TimerNotification {
         this.deleteTailPic = ResourceTools.loadImageFromResource("resources/Scissors.png");
         this.doublePointsPic = ResourceTools.loadImageFromResource("resources/Star.png");
 
-//        this.grid2 = new Grid();
-//        this.grid2.setColor(Color.black);
-//        this.grid2.setRows(20);
-//        this.grid2.setColumns(20);
-//        this.grid2.setCellHeight(15);
-//        this.grid2.setCellWidth(15);
-//        this.grid2.setPosition(new Point(360, 150));
-
         this.grid1 = new Grid();
         this.grid1.setColor(Color.white);
         this.grid1.setColumns(58);
@@ -108,12 +102,12 @@ class SnakeEnvironment extends Environment implements TimerNotification {
         this.grid1.setPosition(new Point(0, 80));
 
         this.addPoints = new ArrayList<Point>();
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < 6; i++) {
             this.addPoints.add(randomPoint());
         }
 
         this.timePenalty = new ArrayList<Point>();
-        for (int i = 0; i < 6; i++) {
+        for (int i = 0; i < 12; i++) {
             this.timePenalty.add(randomPoint());
         }
 
@@ -128,7 +122,7 @@ class SnakeEnvironment extends Environment implements TimerNotification {
         }
 
         this.removeSquares = new ArrayList<Point>();
-        for (int i = 0; i < 2; i++) {
+        for (int i = 0; i < 10; i++) {
             this.removeSquares.add(randomPoint());
         }
 
@@ -143,7 +137,10 @@ class SnakeEnvironment extends Environment implements TimerNotification {
         }
 
         this.snake = new Snake();
-        this.snake.getBody().add(randomPoint());
+        this.snake.getBody().add(new Point(3, 1));
+
+        gameState = GameState.START;
+
 
         this.wall = new ArrayList<Point>();
         for (int i = 0; i < this.grid1.getColumns(); i++) {
@@ -173,9 +170,12 @@ class SnakeEnvironment extends Environment implements TimerNotification {
                 if (clockCounter == 0) {
                     this.clockTimer--;
                     this.clockCounter = clockDelay;
+                    this.totalTime++;
                     if (this.clockTimer <= 0) {
                         this.clockTimer = 0;
                         this.gameState = GameState.ENDED;
+                    } else if (this.score >= 500) {
+                        gameState = GameState.WIN;
                     }
                 } else {
                     this.clockCounter--;
@@ -197,22 +197,51 @@ class SnakeEnvironment extends Environment implements TimerNotification {
                 }
             }
         }
+        
+        
+         if (gameState == GameState.RESTART) {
+             
+ 
+            this.addPoints = new ArrayList<Point>();
+            for (int i = 0; i < 6; i++) {
+                this.addPoints.add(randomPoint());
+            }
 
-//        if (this.snake.getHead().x >= (this.getWidth() / this.grid.getCellWidth())) {
-//
-//            this.snake.getBody().add(0, new Point(0, this.snake.getHead().y));
-//
-//        } else if (this.snake.getHead().y >= (this.getHeight() / this.grid.getCellHeight())) {
-//
-//            this.snake.getBody().add(0, new Point(this.snake.getHead().x, 0));
-//
-//        }
-//            else if (this.snake.getHead().x <= 0) {
-//
-//            this.snake.getBody().add(0, new Point(this.getWidth() - this.grid.getCellWidth(), this.snake.getHead().y));
-//
-//        }
-//        System.out.println(this.getHeight());
+            this.timePenalty = new ArrayList<Point>();
+            for (int i = 0; i < 12; i++) {
+                this.timePenalty.add(randomPoint());
+            }
+
+            this.addTime = new ArrayList<Point>();
+            for (int i = 0; i < 12; i++) {
+                this.addTime.add(randomPoint());
+            }
+
+            this.speedBoost = new ArrayList<Point>();
+            for (int i = 0; i < 2; i++) {
+                this.speedBoost.add(randomPoint());
+            }
+
+            this.removeSquares = new ArrayList<Point>();
+            for (int i = 0; i < 10; i++) {
+                this.removeSquares.add(randomPoint());
+            }
+
+            this.deleteTail = new ArrayList<Point>();
+            for (int i = 0; i < 2; i++) {
+                this.deleteTail.add(randomPoint());
+            }
+
+            this.doublePoints = new ArrayList<Point>();
+            for (int i = 0; i < 2; i++) {
+                this.doublePoints.add(randomPoint());
+            }
+
+            this.snake = new Snake();
+            this.snake.getBody().add(new Point(3, 1));
+            
+            gameState = GameState.START;
+        }
     }
 
     private void levelChecker() {
@@ -304,7 +333,7 @@ class SnakeEnvironment extends Environment implements TimerNotification {
         for (int i = 0; i < this.addPoints.size(); i++) {
             if (snake.getHead().equals(this.addPoints.get(i))) {
                 System.out.println("apples");
-                this.score += 50;
+                this.score += 25;
                 addPoints.get(i).move(this.randomX(), this.randomY());
             }
         }
@@ -343,7 +372,6 @@ class SnakeEnvironment extends Environment implements TimerNotification {
                     createTimerEvent("Speed Boost End 1", 3000);
                 } else if (this.moveDelay == 0) {
                 }
-
             }
         }
 
@@ -390,54 +418,72 @@ class SnakeEnvironment extends Environment implements TimerNotification {
                 gameState = GameState.ENDED;
             }
         }
+
+
     }
 
     @Override
     public void keyPressedHandler(KeyEvent e) {
 
         if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-
             if (this.gameState == GameState.START) {
                 this.gameState = GameState.RUNNING;
             }
-
-        }
-
-        if (e.getKeyCode() == KeyEvent.VK_SPACE) {
+        } else if (e.getKeyCode() == KeyEvent.VK_SPACE) {
             this.moveCounter = 0;
-
             if (this.gameState == GameState.RUNNING) {
                 this.gameState = GameState.PAUSED;
             } else if (this.gameState == GameState.PAUSED) {
                 this.gameState = GameState.RUNNING;
             }
+        } else if (e.getKeyCode() == KeyEvent.VK_I) {
+            if (this.gameState == GameState.START) {
+                this.gameState = GameState.INSTRUCTIONS;
+            } else if (this.gameState == GameState.INSTRUCTIONS) {
+                this.gameState = GameState.START;
+            }
+        } else if (e.getKeyCode() == KeyEvent.VK_3) {
+            gameState = GameState.ENDED;
         }
 
-        if (e.getKeyCode() == KeyEvent.VK_T) {
-            createTimerEvent("TEST", 500);
+        if (e.getKeyCode() == KeyEvent.VK_1) {
+            gameState = GameState.WIN;
+        } else if (e.getKeyCode() == KeyEvent.VK_2) {
+            gameState = GameState.RESTART;
+        }
+
+        if (gameState == GameState.INSTRUCTIONS) {
+            if (e.getKeyCode() == KeyEvent.VK_SPACE) {
+                if (this.page2) {
+                    this.page2 = false;
+                } else {
+                    this.page2 = true;
+                }
+            }
         }
 
         if (gameState == GameState.RUNNING) {
-            if (e.getKeyCode() == KeyEvent.VK_W) {
-                if (snake.getDirection() == Direction.DOWN) {
-                    return;
+            if (e.getKeyCode() == KeyEvent.VK_W || e.getKeyCode() == KeyEvent.VK_UP) {
+                if (snake.getDirection() != Direction.DOWN) {
+                    snake.setDirection(Direction.UP);
                 }
-                snake.setDirection(Direction.UP);
-            } else if (e.getKeyCode() == KeyEvent.VK_S) {
-                if (snake.getDirection() == Direction.UP) {
-                    return;
+            } else if (e.getKeyCode() == KeyEvent.VK_S || e.getKeyCode() == KeyEvent.VK_DOWN) {
+                if (snake.getDirection() != Direction.UP) {
+                    snake.setDirection(Direction.DOWN);
                 }
-                snake.setDirection(Direction.DOWN);
-            } else if (e.getKeyCode() == KeyEvent.VK_D) {
-                if (snake.getDirection() == Direction.LEFT) {
-                    return;
+            } else if (e.getKeyCode() == KeyEvent.VK_D || e.getKeyCode() == KeyEvent.VK_RIGHT) {
+                if (snake.getDirection() != Direction.LEFT) {
+                    snake.setDirection(Direction.RIGHT);
                 }
-                snake.setDirection(Direction.RIGHT);
-            } else if (e.getKeyCode() == KeyEvent.VK_A) {
-                if (snake.getDirection() == Direction.RIGHT) {
-                    return;
+            } else if (e.getKeyCode() == KeyEvent.VK_A || e.getKeyCode() == KeyEvent.VK_LEFT) {
+                if (snake.getDirection() != Direction.RIGHT) {
+                    snake.setDirection(Direction.LEFT);
                 }
                 snake.setDirection(Direction.LEFT);
+            }
+        } else if (gameState == GameState.ENDED || gameState == GameState.WIN) {
+            if (e.getKeyCode() == KeyEvent.VK_SPACE) {
+               gameState = GameState.RESTART; 
             }
         }
     }
@@ -499,7 +545,6 @@ class SnakeEnvironment extends Environment implements TimerNotification {
                 }
             }
 
-
             if (this.removeSquares != null) {
                 for (int i = 0; i < this.removeSquares.size(); i++) {
                     graphics.drawImage(removeSquaresPic, this.grid1.getCellPosition(this.removeSquares.get(i)).x, this.grid1.getCellPosition(this.removeSquares.get(i)).y, this.grid1.getCellSize().x, this.grid1.getCellSize().y, this);
@@ -558,6 +603,11 @@ class SnakeEnvironment extends Environment implements TimerNotification {
                 graphics.setFont(new Font("Calibri", Font.BOLD, 40));
                 graphics.drawString("Score: " + this.score, 340, 330);
                 graphics.drawString("Level: " + paintLevel, 340, 365);
+                graphics.setColor(Color.black);
+                graphics.fillRect(279, 381, 311, 23);
+                graphics.setColor(Color.white);
+                graphics.setFont(new Font("OCRAStd", Font.BOLD, 20));
+                graphics.drawString("Press Space to Restart", 280, 400);
             } else if (gameState == GameState.RUNNING) {
                 graphics.setColor(Color.WHITE);
                 graphics.setFont(new Font("Calibri", Font.BOLD, 60));
@@ -584,7 +634,8 @@ class SnakeEnvironment extends Environment implements TimerNotification {
                 graphics.setFont(new Font("Calibri", Font.BOLD, 40));
                 graphics.drawString("Press Space To Continue", 220, 355);
             } else if (this.gameState == GameState.START) {
-                graphics.setColor(new Color(255, 255, 0, 150));
+                this.page2 = false;
+                graphics.setColor(new Color(255, 255, 0, 200));
                 graphics.fillRect(100, 100, 670, 320);
                 graphics.setFont(new Font("Stencil Std", Font.BOLD, 150));
                 graphics.setColor(Color.WHITE);
@@ -596,6 +647,69 @@ class SnakeEnvironment extends Environment implements TimerNotification {
                 graphics.setColor(Color.BLACK);
                 graphics.drawString("Press i for Instructions", 120, 350);
                 graphics.drawString("Press ENTER to start", 470, 350);
+            } else if (this.gameState == GameState.INSTRUCTIONS) {
+                graphics.setColor(new Color(255, 255, 0, 200));
+                graphics.fillRect(100, 100, 670, 320);
+                graphics.setColor(Color.BLACK);
+                graphics.setFont(new Font("OCRAStd", Font.BOLD, 30));
+                graphics.drawString("Instructions", 300, 140);
+                graphics.setColor(Color.black);
+                graphics.fillRect(315, 381, 248, 23);
+                graphics.setColor(Color.white);
+                graphics.setFont(new Font("OCRAStd", Font.BOLD, 20));
+                graphics.drawString("Press i to Return", 320, 400);
+                graphics.setColor(Color.blue);
+                graphics.setFont(new Font("OCRAStd", Font.BOLD, 14));
+                if (this.page2 == false) {
+                    graphics.drawString("Page 1", 110, 130);
+                    graphics.drawString("You are the white square in the upper right corner of your screen.", 100, 170);
+                    graphics.drawString("When you begin playing, you will begin moving.", 100, 190);
+                    graphics.drawString("You will use your arrow keys to control its direction.", 100, 210);
+                    graphics.drawString("Once you have moved over a square, it will fall into 'the void'.", 100, 230);
+                    graphics.drawString("If you attempt to cross over a square in the void, you will lose.", 100, 250);
+                    graphics.drawString("If you run into a red wall or run out of time, you will lose.", 100, 270);
+                    graphics.drawString("As you move around the playing field, you will accumulate points.", 100, 290);
+                    graphics.drawString("More  points means a higher level which means a faster speed", 100, 310);
+                    graphics.drawString("Your goal is to collect 500 points in the quickest time possible.", 100, 330);
+                } else {
+                    graphics.drawString("Page 2", 110, 130);
+                    graphics.drawString("Available Powerups:", 100, 170);
+                    graphics.drawImage(doublePointsPic, 101, 176, new Point(this.grid1.getCellSize()).x, new Point(this.grid1.getCellSize()).y, this);
+                    graphics.drawString("Star: temporary double points", 120, 190);
+                    GraphicsPalette.drawApple(graphics, new Point(100, 195), new Point(this.grid1.getCellSize()));
+                    graphics.setColor(Color.blue);
+                    graphics.drawString("Apple: score boost", 120, 210);
+                    graphics.drawImage(timePenaltyPic, 101, 215, new Point(this.grid1.getCellSize()).x, new Point(this.grid1.getCellSize()).y, this);
+                    graphics.drawString("Mine: breifly stop your movement", 120, 230);
+                    graphics.drawImage(addTimePic, 101, 236, new Point(this.grid1.getCellSize()).x, new Point(this.grid1.getCellSize()).y, this);
+                    graphics.drawString("Clock: extra time", 120, 250);
+                    graphics.drawImage(speedBoostPic, 101, 256, new Point(this.grid1.getCellSize()).x, new Point(this.grid1.getCellSize()).y, this);
+                    graphics.drawString("Lightning: temporary speed boost", 120, 270);
+                    graphics.drawImage(deleteTailPic, 101, 276, new Point(this.grid1.getCellSize()).x, new Point(this.grid1.getCellSize()).y, this);
+                    graphics.drawString("Scissors: temporarily stop falling into the void", 120, 290);
+                    graphics.drawImage(removeSquaresPic, 101, 296, new Point(this.grid1.getCellSize()).x, new Point(this.grid1.getCellSize()).y, this);
+                    graphics.drawString("Bomb: random squares will drop into the void", 120, 310);
+                    GraphicsPalette.enterPortal(graphics, new Point(100, 316), this.grid1.getCellSize(), Color.yellow);
+                    graphics.setColor(Color.blue);
+                    graphics.drawString("Portal: transports you to the location of the other portal", 120, 330);
+                }
+                graphics.setColor(Color.BLACK);
+                graphics.setFont(new Font("OCRAStd", Font.BOLD, 17));
+                graphics.drawString("Press SPACE to Change Page", 280, 360);
+            } else if (gameState == GameState.WIN) {
+                graphics.setColor(new Color(169, 252, 53, 200));
+                graphics.fillRect(100, 100, 670, 320);
+                graphics.setColor(Color.BLACK);
+                graphics.setFont(new Font("OCRAStd", Font.BOLD, 100));
+                graphics.drawString("You Win!", 150, 270);
+                graphics.setColor(Color.WHITE);
+                graphics.setFont(new Font("OCRAStd", Font.BOLD, 60));
+                graphics.drawString("Time: " + this.totalTime, 280, 355);
+                graphics.setColor(Color.black);
+                graphics.fillRect(279, 381, 311, 23);
+                graphics.setColor(Color.white);
+                graphics.setFont(new Font("OCRAStd", Font.BOLD, 20));
+                graphics.drawString("Press Space to Restart", 280, 400);
             }
         }
     }  //<editor-fold defaultstate="collapsed" desc="TimerNotification Interface">

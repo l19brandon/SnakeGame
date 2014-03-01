@@ -10,7 +10,7 @@ package snakegame;
  */
 public enum GameState {
     
-        RUNNING, PAUSED, ENDED, START
+        RUNNING, PAUSED, ENDED, START, INSTRUCTIONS, WIN,  RESTART
     
     
 }
