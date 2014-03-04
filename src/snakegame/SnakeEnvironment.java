@@ -40,6 +40,7 @@ class SnakeEnvironment extends Environment implements TimerNotification {
     private int level5 = 450;
     private int totalTime = 0;
     private int pointsRemaining = 0;
+    private int paintLevel = 1;
     private ArrayList<Point> addPoints;
     private ArrayList<Point> timePenalty;
     private ArrayList<Point> addTime;
@@ -248,6 +249,8 @@ class SnakeEnvironment extends Environment implements TimerNotification {
             for (int i = 0; i < 2; i++) {
                 this.doublePoints.add(randomPoint());
             }
+            
+            level = Level.ONE;
 
             this.snake = new Snake();
             this.snake.getBody().add(new Point(3, 1));
@@ -560,19 +563,18 @@ class SnakeEnvironment extends Environment implements TimerNotification {
 
         Point headLocation;
             Point wallLocation;
-            int paintLevel = 0;
             graphics.setColor(Color.red);
 
             if (level == level.ONE) {
-                paintLevel = 1;
+                this.paintLevel = 1;
             } else if (level == level.TWO) {
-                paintLevel = 2;
+                this.paintLevel = 2;
             } else if (level == level.THREE) {
-                paintLevel = 3;
+                this.paintLevel = 3;
             } else if (level == level.FOUR) {
-                paintLevel = 4;
+                this.paintLevel = 4;
             } else if (level == level.FIVE) {
-                paintLevel = 5;
+                this.paintLevel = 5;
             }
 
             if (this.grid1 != null) {
@@ -681,7 +683,7 @@ class SnakeEnvironment extends Environment implements TimerNotification {
                     graphics.drawString("Timer:" + this.clockTimer, 300, 60);
                     graphics.setColor(Color.WHITE);
                     graphics.setFont(new Font("Calibri", Font.BOLD, 30));
-                    graphics.drawString("Level: " + paintLevel, 570, 40);
+                    graphics.drawString("Level: " + this.paintLevel, 570, 40);
                     graphics.drawString("Points To Next Level: " + this.pointsRemaining, 570, 68);
                 } else if (this.gameState == GameState.PAUSED) {
                     graphics.setColor(new Color(250, 50, 50, 100));
