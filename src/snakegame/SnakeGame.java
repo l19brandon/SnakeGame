@@ -20,6 +20,6 @@ public class SnakeGame {
     }
 
     private static void start() {
-        ApplicationStarter.run("Snake Game", new SnakeEnvironment());
+        ApplicationStarter.run("Void", new SnakeEnvironment());
     }
 }

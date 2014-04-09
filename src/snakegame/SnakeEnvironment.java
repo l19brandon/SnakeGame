@@ -455,22 +455,21 @@ class SnakeEnvironment extends Environment implements TimerNotification {
     @Override
     public void keyPressedHandler(KeyEvent e) {
 
-        if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+        if (e.getKeyCode() == KeyEvent.VK_SPACE) {
+            if (this.gameState == gameState.RUNNING) {
+                this.moveCounter = 0;
+                this.gameState = GameState.PAUSED;
+                AudioPlayer.play("/resources/button.wav");
+            } else if (this.gameState == GameState.PAUSED) {
+                this.gameState = GameState.RUNNING;
+                AudioPlayer.play("/resources/button.wav");
+            }
+            
             if (this.gameState == GameState.START) {
                 this.gameState = GameState.RUNNING;
                 AudioPlayer.play("/resources/button.wav");
             }
-        } else if (e.getKeyCode() == KeyEvent.VK_SPACE) {
-            this.moveCounter = 0;
-            if (this.gameState == GameState.RUNNING) {
-                this.gameState = GameState.PAUSED;
-                AudioPlayer.play("/resources/button.wav");
-
-            } else if (this.gameState == GameState.PAUSED) {
-                this.gameState = GameState.RUNNING;
-                AudioPlayer.play("/resources/button.wav");
-
-            }
+            
         } else if (e.getKeyCode() == KeyEvent.VK_I) {
             if (this.gameState == GameState.START) {
                 this.gameState = GameState.INSTRUCTIONS;
@@ -707,7 +706,7 @@ class SnakeEnvironment extends Environment implements TimerNotification {
                     graphics.fillRect(465, 330, 290, 23);
                     graphics.setColor(Color.BLACK);
                     graphics.drawString("Press i for Instructions", 120, 350);
-                    graphics.drawString("Press ENTER to start", 470, 350);
+                    graphics.drawString("Press SPACE to start", 470, 350);
                 } else if (this.gameState == GameState.INSTRUCTIONS) {
                     graphics.setColor(new Color(255, 255, 0, 200));
                     graphics.fillRect(100, 100, 670, 320);
